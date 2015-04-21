@@ -7,7 +7,7 @@
 //
 
 #import "RootVC.h"
-#import "UIViewController+PFScrollNavigation.h"
+#import "PFScrollNavigation.h"
 
 @interface RootVC ()
 
@@ -33,52 +33,61 @@
 {
     [super viewDidLoad];
     
-    [self setupData];
+    [self setupScrollNavigation];
+    [self setupTableView];
     
-    _scrollNavigation = [[PFScrollNavigation alloc] initWithScrollNavigationDelegate:nil];
-    _scrollNavigation.delegate = self;
-    
-    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 1000) style:UITableViewStylePlain];
-    tableView.delegate = (id)_scrollNavigation; // cast for surpress incompatible warnings
-    tableView.dataSource = self;
-    [self.view addSubview:tableView];
-    
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetBars) name:UIApplicationWillEnterForegroundNotification object:nil]; // resume bars when back to forground from other apps
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetBars) name:UIApplicationWillEnterForegroundNotification object:nil];
     
     if (![[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
-        // support full screen on iOS 6
         self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
         self.navigationController.toolbar.barStyle = UIBarStyleBlackTranslucent;
     }
 }
 
--(void)viewDidLayoutSubviews
+- (void)setupScrollNavigation
 {
-    // remove bottom toolbar height from inset
-//    UIEdgeInsets inset = self.tableView.contentInset;
-//    inset.bottom = 0;
-//    self.tableView.contentInset = inset;
-//    inset = self.tableView.scrollIndicatorInsets;
-//    inset.bottom = 0;
-//    self.tableView.scrollIndicatorInsets = inset;
+    _scrollNavigation = [[PFScrollNavigation alloc] init];
+    @weakify_self
+    [_scrollNavigation scrollUpUsingBlock:^(CGFloat y) {
+        @strongify_self
+        [self moveNavigationBar:y animated:YES];
+        [self moveToolbar:-y animated:YES];
+    }];
+    
+    [_scrollNavigation scrollDownUsingBlock:^(CGFloat y) {
+        @strongify_self
+        [self moveNavigationBar:y animated:YES];
+        [self moveToolbar:-y animated:YES];
+    }];
+    
+    [_scrollNavigation scrollUpDidEndDraggingUsingBlock:^{
+        @strongify_self
+        [self hideNavigationBar:YES];
+        [self hideToolbar:YES];
+    }];
+    
+    [_scrollNavigation scrollDownDidEndDraggingUsingBlock:^{
+        @strongify_self
+        [self showNavigationBar:YES];
+        [self showToolbar:YES];
+    }];
+    
+    [_scrollNavigation heightForRowUsingBlock:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+        return 200;
+    }];
+    
+    [_scrollNavigation didSelectRowUsingBlock:^(UITableView *tableView, NSIndexPath *indexPath) {
+        NSLog(@"%d", indexPath.row);
+    }];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void)setupTableView
 {
-    [super viewWillDisappear:animated];
-    [_scrollNavigation reset];
-    [self showNavigationBar:animated];
-    [self showToolbar:animated];
-}
-
-- (void)setupData
-{
-    NSMutableArray *data = [@[] mutableCopy];
-    for (NSUInteger i = 0; i < 100; i++) {
-        [data addObject:@(i)];
-    }
-    _data = [data copy];
+    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10, self.view.frame.size.width - 20, self.view.frame.size.height - 10) style:UITableViewStylePlain];
+    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    tableView.delegate = (id)_scrollNavigation; //将列表的代理给予导航
+    tableView.dataSource = self;
+    [self.view addSubview:tableView];
 }
 
 - (void)refreshControlValueChanged:(id)sender
@@ -100,7 +109,6 @@
 }
 
 #pragma mark -
-#pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -118,42 +126,7 @@
     return cell;
 }
 
-#pragma mark -
-#pragma mark NJKScrollFullScreenDelegate
 
-//导航栏上滑
-- (void)scrollNavigation:(PFScrollNavigation *)scrollNavigation scrollUpWithOriginY:(CGFloat)y
-{
-    
-    [self moveNavigationBar:y animated:YES];
-    [self moveToolbar:-y animated:YES]; // move to revese direction
-    
-    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)])
-    {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
-    }
-}
-
-//导航栏下滑
-- (void)scrollNavigation:(PFScrollNavigation *)scrollNavigation scrollDownWithOriginY:(CGFloat)y
-{
-    [self moveNavigationBar:y animated:YES];
-    [self moveToolbar:-y animated:YES];
-}
-
-//停止上滑
-- (void)scrollUpDidEndDragging:(PFScrollNavigation *)scrollNavigation
-{
-    [self hideNavigationBar:YES];
-    [self hideToolbar:YES];
-}
-
-//停止下滑
-- (void)scrollDownDidEndDragging:(PFScrollNavigation *)scrollNavigation
-{
-    [self showNavigationBar:YES];
-    [self showToolbar:YES];
-}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {

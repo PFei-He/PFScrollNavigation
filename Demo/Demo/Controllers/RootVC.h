@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PFScrollNavigation.h"
 
-@interface RootVC : UIViewController <PFScrollNavigationDelegate, UITableViewDataSource>
+@interface RootVC : UIViewController <UITableViewDataSource>
 
 @end
