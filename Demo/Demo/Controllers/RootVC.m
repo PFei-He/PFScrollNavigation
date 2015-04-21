@@ -11,7 +11,6 @@
 
 @interface RootVC ()
 
-@property (nonatomic) NSArray *data;
 @property (nonatomic) PFScrollNavigation *scrollNavigation;
 
 @end
@@ -33,15 +32,15 @@
 {
     [super viewDidLoad];
     
-    [self setupScrollNavigation];
-    [self setupTableView];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetBars) name:UIApplicationWillEnterForegroundNotification object:nil];
+    self.title = @"上移会消失的导航";
     
     if (![[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0) {
         self.navigationController.navigationBar.barStyle = UIBarStyleBlackTranslucent;
         self.navigationController.toolbar.barStyle = UIBarStyleBlackTranslucent;
     }
+    
+    [self setupScrollNavigation];
+    [self setupTableView];
 }
 
 - (void)setupScrollNavigation
@@ -84,55 +83,26 @@
 - (void)setupTableView
 {
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(10, 10, self.view.frame.size.width - 20, self.view.frame.size.height - 10) style:UITableViewStylePlain];
-    tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     tableView.delegate = (id)_scrollNavigation; //将列表的代理给予导航
     tableView.dataSource = self;
     [self.view addSubview:tableView];
 }
 
-- (void)refreshControlValueChanged:(id)sender
-{
-//    [self.refreshControl beginRefreshing];
-    // simulate loading time
-    double delayInSeconds = 2.0;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-//        [self.refreshControl endRefreshing];
-    });
-}
-
-- (void)resetBars
-{
-    [_scrollNavigation reset];
-    [self showNavigationBar:NO];
-    [self showToolbar:NO];
-}
-
-#pragma mark -
+#pragma mark - UITableViewDelegate Methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 50;
+    return 10;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *Identifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:Identifier];
+    static NSString *identifier = @"identifier";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:Identifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     }
-//    cell.textLabel.text = [_data[indexPath.row] stringValue];
     return cell;
-}
-
-
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    [_scrollNavigation reset];
-    [self showNavigationBar:YES];
-    [self showToolbar:YES];
 }
 
 #pragma mark - Memory Management

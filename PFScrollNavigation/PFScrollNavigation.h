@@ -7,7 +7,7 @@
 //
 //  https://github.com/PFei-He/PFScrollNavigation
 //
-//  vesion: 0.1.0-beta7
+//  vesion: 0.1.0-beta8
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -89,7 +89,7 @@
 
 @optional
 
-#pragma mark -
+#pragma mark - PFScrollNavigationDelegate Methods
 
 /**
  *  @brief 导航栏上滑
@@ -113,7 +113,7 @@
  */
 - (void)scrollDownDidEndDragging:(PFScrollNavigation *)scrollNavigation;
 
-#pragma mark -
+#pragma mark - UITableViewDelegate Methods
 
 /**
  *  @brief 行高
@@ -143,7 +143,7 @@
 ///代理
 @property (nonatomic, weak) id<PFScrollNavigationDelegate> delegate;
 
-#pragma mark -
+#pragma mark - PFScrollNavigation Methods
 
 /**
  *  @brief 重设
@@ -174,7 +174,7 @@
  */
 - (void)scrollDownDidEndDraggingUsingBlock:(void (^)(void))block;
 
-#pragma mark - UITableViewDelegate
+#pragma mark - UITableViewDelegate Methods
 
 /**
  *  @brief 行高
