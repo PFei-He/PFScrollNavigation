@@ -7,7 +7,7 @@
 //
 //  https://github.com/PFei-He/PFScrollNavigation
 //
-//  vesion: 0.1.0-beta10
+//  vesion: 0.1.0
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -163,7 +163,7 @@
     CGFloat topLimit = viewHeight - toolBarHeight;
     CGFloat bottomLimit = viewHeight;
     
-    frame.origin.y = fmin(fmax(y, topLimit), bottomLimit); // limit over moving
+    frame.origin.y = fmin(fmax(y, topLimit), bottomLimit);
     
     [UIView animateWithDuration:animated ? 0.1 : 0 animations:^{
         self.navigationController.toolbar.frame = frame;
@@ -209,7 +209,7 @@
     CGFloat topLimit = viewHeight - toolBarHeight;
     CGFloat bottomLimit = viewHeight;
     
-    frame.origin.y = fmin(fmax(y, topLimit), bottomLimit); // limit over moving
+    frame.origin.y = fmin(fmax(y, topLimit), bottomLimit);
     
     [UIView animateWithDuration:animated ? 0.1 : 0 animations:^{
         self.tabBarController.tabBar.frame = frame;
