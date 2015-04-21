@@ -7,7 +7,7 @@
 //
 //  https://github.com/PFei-He/PFScrollNavigation
 //
-//  vesion: 0.1.0-beta8
+//  vesion: 0.1.0-beta9
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -78,18 +78,8 @@
 //隐藏导航栏
 - (void)hideNavigationBar:(BOOL)animated
 {
-    CGFloat statusBarHeight = [self statusBarHeight];
-    
-    UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
-    UIView *baseView = keyWindow.rootViewController.view;
-    CGRect frame = [baseView convertRect:baseView.bounds toView:keyWindow];
-    
-    CGFloat overwrapStatusBarHeight = statusBarHeight - frame.origin.y;
-    
     CGFloat navigationBarHeight = self.navigationController.navigationBar.frame.size.height;
-    CGFloat top = kVERSION_IS_IOS7 ? -navigationBarHeight + overwrapStatusBarHeight : -navigationBarHeight;
-    
-    [self setNavigationBarOriginY:top animated:animated];
+    [self setNavigationBarOriginY:-navigationBarHeight animated:animated];
 }
 
 //移动导航栏
@@ -109,17 +99,14 @@
     UIView *baseView = keyWindow.rootViewController.view;
     CGRect viewControllerFrame =  [baseView convertRect:baseView.bounds toView:keyWindow];
     
-    CGFloat overwrapStatusBarHeight = statusBarHeight - viewControllerFrame.origin.y;
+    statusBarHeight = statusBarHeight - viewControllerFrame.origin.y;
     
     CGRect frame = self.navigationController.navigationBar.frame;
     CGFloat navigationBarHeight = frame.size.height;
     
-    CGFloat topLimit = kVERSION_IS_IOS7 ? -navigationBarHeight + overwrapStatusBarHeight : -navigationBarHeight;
-    CGFloat bottomLimit = overwrapStatusBarHeight;
+    frame.origin.y = fmin(fmax(y, -navigationBarHeight), statusBarHeight);
     
-    frame.origin.y = fmin(fmax(y, topLimit), bottomLimit);
-    
-    CGFloat navBarHiddenRatio = overwrapStatusBarHeight > 0 ? (overwrapStatusBarHeight - frame.origin.y) / overwrapStatusBarHeight : 0;
+    CGFloat navBarHiddenRatio = statusBarHeight > 0 ? (statusBarHeight - frame.origin.y) / statusBarHeight : 0;
     CGFloat alpha = MAX(1.f - navBarHiddenRatio, kNearZero);
     [UIView animateWithDuration:animated ? 0.1 : 0 animations:^{
         self.navigationController.navigationBar.frame = frame;

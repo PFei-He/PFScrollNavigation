@@ -7,7 +7,7 @@
 //
 //  https://github.com/PFei-He/PFScrollNavigation
 //
-//  vesion: 0.1.0-beta8
+//  vesion: 0.1.0-beta9
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -223,15 +223,12 @@ typedef void(^rowBlock)(UITableView *, NSIndexPath *);
     _previousScrollDirection = currentScrollDirection;
     _previousOffsetY = currentOffsetY;
     
-    /**
-     * 移动状态栏，目前任然有问题，后续更新
-     *
-    CGFloat offsetY = scrollView.contentOffset.y;
+    //移动状态栏
     UIWindow *statusBarWindow = (UIWindow *)[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"];
     statusBarWindow.tintColor = [UIColor clearColor];
     if(_accumulatedY < -_upThresholdY) {
         [statusBarWindow setFrame:CGRectMake(0,
-                                             -1 * offsetY,
+                                             _accumulatedY,
                                              statusBarWindow.frame.size.width,
                                              statusBarWindow.frame.size.height)];
     } else if (_accumulatedY > _downThresholdY) {
@@ -240,7 +237,7 @@ typedef void(^rowBlock)(UITableView *, NSIndexPath *);
                                              statusBarWindow.frame.size.width,
                                              statusBarWindow.frame.size.height)];
     }
-     */
+    
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
