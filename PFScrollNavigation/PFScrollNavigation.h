@@ -7,7 +7,7 @@
 //
 //  https://github.com/PFei-He/PFScrollNavigation
 //
-//  vesion: 0.1.0-beta9
+//  vesion: 0.1.0-beta10
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal

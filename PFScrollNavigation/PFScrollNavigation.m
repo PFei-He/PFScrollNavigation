@@ -7,7 +7,7 @@
 //
 //  https://github.com/PFei-He/PFScrollNavigation
 //
-//  vesion: 0.1.0-beta9
+//  vesion: 0.1.0-beta10
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -233,7 +233,7 @@ typedef void(^rowBlock)(UITableView *, NSIndexPath *);
                                              statusBarWindow.frame.size.height)];
     } else if (_accumulatedY > _downThresholdY) {
         [statusBarWindow setFrame:CGRectMake(0,
-                                             0,
+                                             (y <= 0) ? y : 0,
                                              statusBarWindow.frame.size.width,
                                              statusBarWindow.frame.size.height)];
     }
